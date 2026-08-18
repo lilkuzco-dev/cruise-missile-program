@@ -29,6 +29,9 @@ loom {
 		gametest {
 			inherit client
 			vmArg "-Dfabric.client.gametest"
+			// Optional integration jars carry their own large render batteries. Load those mods,
+			// but execute only this mod's entrypoint in this repository's ship gate.
+			vmArg "-Dfabric.client.gametest.modid=cruise_missile_program"
 			runDir "build/run-gametest"
 		}
 	}
