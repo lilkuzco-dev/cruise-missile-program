@@ -337,3 +337,9 @@ hazard rail, and a mounting plate underneath.
 
 Still genuinely placeholder: no custom particles (vanilla smoke), and the console screen is drawn
 in code rather than textured.
+
+Terrain-warhead impacts embed the centre of that vanilla explosion a short distance along the
+incoming velocity. Kinetics reports a collision immediately outside the struck block; exploding at
+that raw point wastes half of a spherical TNT blast in open air and makes low horizontal strikes
+look flat. `cruise depthtest` fires the same path into a controlled stone volume, measures the
+cleared vertical column, and the client integration test requires at least two blocks of depth.

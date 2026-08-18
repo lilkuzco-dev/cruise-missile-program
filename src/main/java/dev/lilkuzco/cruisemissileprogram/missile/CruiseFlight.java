@@ -306,7 +306,8 @@ public final class CruiseFlight {
 
 		// Arrival, by any of the three ways a flight can end.
 		if (!impacts.isEmpty()) {
-			return detonate(level, flight, impacts.get(0).position());
+			KineticEvent.Impact impact = impacts.get(0);
+			return detonateImpact(level, flight, impact.position(), impact.velocity());
 		}
 		if (result != null && result.collided()) {
 			if (flight.trace) {
@@ -318,7 +319,7 @@ public final class CruiseFlight {
 						String.format("%.1f", hit.y()
 								- env.groundYBelow(hit.x(), hit.z(), hit.y())));
 			}
-			return detonate(level, flight, body.position());
+			return detonateImpact(level, flight, body.position(), body.velocity());
 		}
 		// The fuse. A direct hit fires immediately; otherwise, once armed, the moment the range
 		// stops falling IS the closest approach, and that is where the warhead goes off.
@@ -518,6 +519,15 @@ public final class CruiseFlight {
 	private static boolean detonate(ServerLevel level, InFlight flight, Vec3 at) {
 		removeEntity(level, flight);
 		Detonation.at(level, at, flight.warhead, flight.commanderName);
+		CruiseMissileProgram.LOG.info("{} impact at {} after {}s of flight",
+				flight.bodyId, fmt(at), Math.round(flight.age));
+		return true;
+	}
+
+	private static boolean detonateImpact(ServerLevel level, InFlight flight, Vec3 at,
+			Vec3 velocity) {
+		removeEntity(level, flight);
+		Detonation.atImpact(level, at, velocity, flight.warhead, flight.commanderName);
 		CruiseMissileProgram.LOG.info("{} impact at {} after {}s of flight",
 				flight.bodyId, fmt(at), Math.round(flight.age));
 		return true;

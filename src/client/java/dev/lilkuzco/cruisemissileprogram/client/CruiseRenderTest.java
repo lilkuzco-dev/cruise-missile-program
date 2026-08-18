@@ -1,5 +1,6 @@
 package dev.lilkuzco.cruisemissileprogram.client;
 
+import dev.lilkuzco.cruisemissileprogram.missile.Detonation;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -27,8 +28,8 @@ public class CruiseRenderTest implements FabricClientGameTest {
 			context.waitTicks(80);
 			var server = world.getServer();
 			server.runCommand("time set noon");
-			server.runCommand("gamerule doDaylightCycle false");
-			server.runCommand("gamerule doWeatherCycle false");
+			server.runCommand("gamerule advance_time false");
+			server.runCommand("gamerule advance_weather false");
 			server.runCommand("gamemode creative @p");
 			server.runCommand("difficulty peaceful");
 			server.runCommand("kill @e[type=!minecraft:player]");
@@ -38,7 +39,6 @@ public class CruiseRenderTest implements FabricClientGameTest {
 			// every run; a fixed stage at a fixed origin is reproducible.
 			server.runCommand("forceload add -3 -3 3 3");
 			server.runCommand("fill -40 99 -40 40 99 40 minecraft:stone");
-			server.runCommand("fill -40 100 -40 40 140 40 minecraft:air");
 			server.runCommand("tp @p 0 101 0");
 			context.waitTicks(40);
 
@@ -97,6 +97,23 @@ public class CruiseRenderTest implements FabricClientGameTest {
 			context.takeScreenshot("cruise_flight_downrange");
 
 			context.waitTicks(20);
+
+			// ---- 5. a controlled three-dimensional terrain blast -----------------
+			server.runCommand("fill 20 88 -6 40 112 6 minecraft:stone");
+			server.runCommand("gamemode spectator @p");
+			server.runCommand("tp @p 10 108 -10 -45 25");
+			Detonation.clearLastResult();
+			server.runCommand("execute positioned 19.999 100 0 run cruise depthtest");
+			context.waitTicks(30);
+			Detonation.Result result = Detonation.lastResult();
+			if (result == null) {
+				throw new AssertionError("cruise depth test did not detonate");
+			}
+			if (result.verticalDepth() < 2) {
+				throw new AssertionError("cruise blast cleared only " + result.verticalDepth()
+						+ " vertical blocks; expected TNT-like depth");
+			}
+			context.takeScreenshot("cruise_blast_depth");
 		}
 	}
 }

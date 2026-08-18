@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lilkuzco.cruisemissileprogram.CruiseMissileProgram;
 import dev.lilkuzco.cruisemissileprogram.missile.CruiseFlight;
+import dev.lilkuzco.cruisemissileprogram.missile.Detonation;
 import dev.lilkuzco.cruisemissileprogram.warhead.WarheadSpec;
 import dev.lilkuzco.kinetics.math.Vec3;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -41,7 +42,9 @@ public final class CruiseCommands {
 										.executes(ctx -> selftest(ctx,
 												IntegerArgumentType.getInteger(ctx, "range")))))
 						.then(Commands.literal("status")
-								.executes(CruiseCommands::status))));
+								.executes(CruiseCommands::status))
+						.then(Commands.literal("depthtest")
+								.executes(CruiseCommands::depthtest))));
 	}
 
 	/**
@@ -103,5 +106,21 @@ public final class CruiseCommands {
 				"cruise: %d missile(s) in the air, %d strike(s) counting down",
 				CruiseFlight.liveCount(), StrikeTracker.pendingCount())), false);
 		return 1;
+	}
+
+	/** Detonate a conventional test warhead travelling east from the command source. */
+	private static int depthtest(CommandContext<CommandSourceStack> ctx) {
+		CommandSourceStack source = ctx.getSource();
+		WarheadSpec warhead = new WarheadSpec(
+				Identifier.fromNamespaceAndPath("cruise_missile_program", "conventional_warhead"),
+				1, 4.5F, false, true);
+		net.minecraft.world.phys.Vec3 at = source.getPosition();
+		Detonation.atImpact(source.getLevel(), new Vec3(at.x, at.y, at.z),
+				new Vec3(1.0, 0.0, 0.0), warhead, "depthtest");
+		Detonation.Result result = Detonation.lastResult();
+		source.sendSuccess(() -> Component.literal(String.format(
+				"cruise depthtest: vanilla blast cleared %d vertical blocks below centre %s",
+				result.verticalDepth(), result.centre())), false);
+		return result.verticalDepth() >= 2 ? 1 : 0;
 	}
 }
