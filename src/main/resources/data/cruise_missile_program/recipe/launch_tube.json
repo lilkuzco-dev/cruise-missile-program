@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["ILI", "ILI", "IRI"],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "L": "minecraft:iron_bars",
+    "R": "minecraft:redstone"
+  },
+  "result": { "id": "cruise_missile_program:launch_tube", "count": 1 }
+}

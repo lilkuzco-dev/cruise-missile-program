@@ -1,0 +1,184 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base { archivesName = 'cruise-missile-program' }
+
+repositories {
+	// kinetics-core is published here by
+	// `../../aerospace/lilkuzco_kinetics/gradlew :core:publishToMavenLocal`.
+	// This mod consumes it as a normal library and adds NO physics of its own.
+	mavenLocal()
+	mavenCentral()
+}
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		"cruise_missile_program" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+
+	runs {
+		gametest {
+			inherit client
+			vmArg "-Dfabric.client.gametest"
+			runDir "build/run-gametest"
+		}
+	}
+}
+
+fabricApi {
+	configureDataGeneration {
+		client = true
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Dev-run mod staging.
+//
+// kinetics is a HARD dependency declared in fabric.mod.json, so Fabric Loader refuses to start
+// without it — including for datagen, which resolves dependencies before it will write a single
+// JSON file. It is not a Gradle-resolvable mod here (only a compileOnly library), so the jar is
+// copied into each run's mods folder. build/ and run/ are disposable, so it is re-copied every
+// launch rather than being checked in. This is the same arrangement cosmos uses.
+//
+// THE DIRECTORY IS WRITTEN LITERALLY, AND THAT IS THE WHOLE POINT.
+//
+// A run task's `workingDir` is the PROJECT directory, not the game directory. Staging off
+// `task.workingDir` writes `<project>/mods/` — a folder the game never reads — and the run then
+// fails with the identical "requires version X of kinetics, which is missing!" error it started
+// with. Nothing errors: the copy succeeds, the log says it staged, and the mod is simply not
+// where the game looks. Each run task below names the directory its own run config actually uses.
+//
+// warfront and cosmos are OPTIONAL and staged only when present. Part 9 requires this mod to boot
+// standalone, and a build that could not produce that state could not test for it.
+// ---------------------------------------------------------------------------
+def kineticsJar = { file("${rootDir}/../../aerospace/lilkuzco_kinetics/fabric/build/libs/"
+		+ "lilkuzco-kinetics-${kinetics_version}.jar") }
+def warfrontJar = { file("${rootDir}/../warfront/build/libs/warfront-${warfront_version}.jar") }
+def cosmosJar = { file("${rootDir}/../../aerospace/lilkuzco_cosmos/build/libs/"
+		+ "lilkuzco-cosmos-${cosmos_version}.jar") }
+
+def stageMods = { File runDir, Logger log ->
+	def mods = new File(runDir, 'mods')
+	mods.mkdirs()
+	mods.listFiles()?.each { it.delete() }
+
+	def required = kineticsJar()
+	if (!required.exists()) {
+		throw new GradleException("cruise_missile_program needs ${required}; build kinetics first "
+				+ "(cd ~/Desktop/aerospace/lilkuzco_kinetics && ./gradlew :fabric:build)")
+	}
+	[required, warfrontJar(), cosmosJar()].each { jar ->
+		if (jar.exists()) {
+			java.nio.file.Files.copy(jar.toPath(), new File(mods, jar.name).toPath(),
+					java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+			log.lifecycle("  staged ${jar.name}")
+		} else {
+			log.lifecycle("  absent, integration disabled: ${jar.name}")
+		}
+	}
+}
+
+// Each run config's ACTUAL game directory. `runClient`/`runServer` use Loom's default `run`;
+// `runDatagen` runs out of `run/datagen`; `runGametest` uses the `runDir` set above.
+def runDirs = [
+		runClient  : 'run',
+		runServer  : 'run',
+		runDatagen : 'run/datagen',
+		runGametest: 'build/run-gametest',
+]
+
+tasks.matching { runDirs.containsKey(it.name) }.configureEach { Task task ->
+	doFirst {
+		def dir = file(runDirs[task.name])
+		dir.mkdirs()
+		task.logger.lifecycle("staging mods into ${dir}/mods")
+		stageMods(dir, task.logger)
+	}
+}
+
+// The gametest run is headless and must not stop to ask about the EULA.
+tasks.matching { it.name == 'runGametest' }.configureEach {
+	doFirst {
+		def dir = file('build/run-gametest')
+		dir.mkdirs()
+		new File(dir, 'eula.txt').text =
+				"# written by the gametest run config; build/run-gametest is a throwaway dev world\n" +
+				"eula=true\n"
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// The motion authority, at compile time. kinetics-core has no Minecraft dependency by
+	// design, so it is a plain library here; the Fabric adapter (KineticsMod / KineticsService)
+	// lives in the mod jar instead.
+	compileOnly "dev.lilkuzco:kinetics-core:${project.kinetics_version}"
+	compileOnly files(kineticsJar())
+
+	// warfront and cosmos are deliberately NOT on the compile classpath. Both bridges are
+	// reflection-only, which is what makes them true soft dependencies rather than jars that
+	// merely claim one in metadata — and it keeps warfront's LGPL out of this mod's link graph
+	// entirely. warfront's own CosmosReconBridge set this precedent. They reach the dev runtime
+	// through mod staging above, so the integration can actually be exercised.
+
+	testImplementation "dev.lilkuzco:kinetics-core:${project.kinetics_version}"
+	testImplementation platform("org.junit:junit-bom:5.13.4")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+	useJUnitPlatform()
+	testLogging { events "passed", "failed", "skipped" }
+}
+
+processResources {
+	inputs.property "version", project.version
+	filesMatching("fabric.mod.json") { expand "version": project.version }
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+	it.options.encoding = 'UTF-8'
+	it.options.compilerArgs += ['-Xlint:all,-serial']
+}
+
+java {
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+	from("LICENSE") { rename { "${it}_cruise_missile_program" } }
+}
+
+// A headless server run for the flight self-test. `runServer` needs a EULA and a level the same
+// way the gametest does, and build/ is disposable, so both are re-stamped each launch.
+tasks.matching { it.name == 'runServer' }.configureEach {
+	doFirst {
+		def dir = file('run')
+		dir.mkdirs()
+		new File(dir, 'eula.txt').text = "eula=true\n"
+		// pause-when-empty-seconds=0 is load-bearing, not tidiness. A dev server with nobody on
+		// it stops ticking after 60 s, and a self-test flight then freezes in mid-air with no
+		// error and no further log lines — the flight simply stops existing in time. It reads
+		// exactly like a stalled simulation and is nothing of the kind.
+		new File(dir, 'server.properties').text =
+				"online-mode=false\nlevel-name=cruisetest\nmax-tick-time=-1\n" +
+				"pause-when-empty-seconds=0\n" +
+				"view-distance=8\nsimulation-distance=6\nsync-chunk-writes=false\n"
+	}
+}

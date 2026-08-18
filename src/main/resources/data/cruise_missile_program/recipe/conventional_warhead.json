@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [" I ", "GTG", "GGG"],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:gunpowder",
+    "T": "minecraft:tnt"
+  },
+  "result": { "id": "cruise_missile_program:conventional_warhead", "count": 1 }
+}

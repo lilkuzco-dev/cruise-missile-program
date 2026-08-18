@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "cruise_missile_program:conventional_warhead",
+    {
+      "id": "missile_program:hornet_warhead",
+      "required": false
+    },
+    {
+      "id": "missile_program:breaker_warhead",
+      "required": false
+    },
+    {
+      "id": "missile_program:mini_warhead",
+      "required": false
+    }
+  ]
+}

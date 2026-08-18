@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "cruise_missile_program:item/conventional_warhead"
+  }
+}

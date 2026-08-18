@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "cruise_missile_program:block/launch_tube_top",
+    "bottom": "cruise_missile_program:block/launch_tube",
+    "side": "cruise_missile_program:block/launch_tube"
+  }
+}

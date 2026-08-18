@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["GRG", "ICI", "III"],
+  "key": {
+    "G": "minecraft:glass_pane",
+    "R": "minecraft:redstone_torch",
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:comparator"
+  },
+  "result": { "id": "cruise_missile_program:fire_control_console", "count": 1 }
+}

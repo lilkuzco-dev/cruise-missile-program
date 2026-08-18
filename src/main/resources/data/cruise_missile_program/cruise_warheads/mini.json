@@ -1,0 +1,7 @@
+{
+  "item": "missile_program:mini_warhead",
+  "tier": 3,
+  "blast": 8.5,
+  "fire": true,
+  "terrain": true
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [" IN", "CFI", " I "],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "N": "minecraft:copper_ingot",
+    "C": "minecraft:redstone",
+    "F": "minecraft:gunpowder"
+  },
+  "result": { "id": "cruise_missile_program:cruise_missile_body", "count": 1 }
+}

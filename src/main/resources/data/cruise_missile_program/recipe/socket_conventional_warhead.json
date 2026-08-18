@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "cruise_missile_program:cruise_missile_body",
+    "cruise_missile_program:conventional_warhead"
+  ],
+  "result": {
+    "id": "cruise_missile_program:cruise_missile_body",
+    "count": 1,
+    "components": {
+      "cruise_missile_program:warhead": "cruise_missile_program:conventional_warhead"
+    }
+  }
+}

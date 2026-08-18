@@ -1,0 +1,50 @@
+{
+  "block.cruise_missile_program.fire_control_console": "Fire Control Console",
+  "block.cruise_missile_program.launch_tube": "Cruise Launch Tube",
+
+  "item.cruise_missile_program.cruise_missile_body": "Cruise Missile Body",
+  "item.cruise_missile_program.conventional_warhead": "Conventional Warhead",
+
+  "entity.cruise_missile_program.cruise_missile": "Cruise Missile",
+
+  "cruise_missile_program.tooltip.body.empty": "No warhead socketed",
+  "cruise_missile_program.tooltip.body.warhead": "Warhead: %s",
+
+  "cruise_missile_program.rank.none": "Unauthorised",
+  "cruise_missile_program.rank.observer": "Observer",
+  "cruise_missile_program.rank.soldier": "Soldier",
+  "cruise_missile_program.rank.officer": "Officer",
+  "cruise_missile_program.rank.commander": "Commander",
+
+  "cruise_missile_program.target_source.manual": "Manual fix",
+  "cruise_missile_program.target_source.satellite": "Satellite fix",
+
+  "cruise_missile_program.message.no_authority": "Your rank does not authorise that.",
+  "cruise_missile_program.message.callsign_set": "Console linked on callsign %s.",
+  "cruise_missile_program.message.callsign_taken": "Callsign %s already answers to another console.",
+  "cruise_missile_program.message.bad_coordinates": "Not a coordinate: %s",
+  "cruise_missile_program.message.no_target": "No target designated.",
+  "cruise_missile_program.message.no_loaded_launcher": "No linked launcher has a round loaded.",
+  "cruise_missile_program.message.wrong_dimension": "That launcher is in another dimension.",
+  "cruise_missile_program.message.no_cosmos": "No satellite network is installed.",
+  "cruise_missile_program.message.no_satellite_data": "NO DATA - nothing is overhead right now.",
+  "cruise_missile_program.message.satellite_fix": "%s reports %s worked blocks; target set.",
+  "cruise_missile_program.message.strike_ordered": "Strike ordered on a launcher %s blocks out. Release in %ss.",
+  "cruise_missile_program.message.strike_announced": "%s ordered a strike from %s on %s, %s, %s.",
+
+  "screen.cruise_missile_program.fire_control": "Fire Control",
+  "screen.cruise_missile_program.callsign": "Callsign",
+  "screen.cruise_missile_program.target": "Target",
+  "screen.cruise_missile_program.link": "Link",
+  "screen.cruise_missile_program.designate": "Set",
+  "screen.cruise_missile_program.fire": "FIRE",
+  "screen.cruise_missile_program.rank": "Rank: %s",
+  "screen.cruise_missile_program.roster": "Linked launchers (%s)",
+  "screen.cruise_missile_program.no_launchers": "No launchers on this callsign.",
+  "screen.cruise_missile_program.more": "...and %s more",
+  "screen.cruise_missile_program.countdown": "Release in %ss",
+  "screen.cruise_missile_program.satellite_fix": "Satellite",
+  "screen.cruise_missile_program.no_satellite": "No satellites",
+  "screen.cruise_missile_program.no_data": "NO DATA",
+  "screen.cruise_missile_program.no_cosmos": "No network"
+}

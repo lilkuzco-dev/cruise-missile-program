@@ -1,0 +1,7 @@
+{
+  "item": "missile_program:breaker_warhead",
+  "tier": 2,
+  "blast": 5.5,
+  "fire": true,
+  "terrain": true
+}

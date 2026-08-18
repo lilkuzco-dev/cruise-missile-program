@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "cruise_missile_program:item/conventional_warhead" }
+}

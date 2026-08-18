@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{ "type": "minecraft:item", "name": "cruise_missile_program:launch_tube" }],
+      "conditions": [{ "condition": "minecraft:survives_explosion" }]
+    }
+  ]
+}

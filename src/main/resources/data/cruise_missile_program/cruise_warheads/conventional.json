@@ -1,0 +1,7 @@
+{
+  "item": "cruise_missile_program:conventional_warhead",
+  "tier": 1,
+  "blast": 4.5,
+  "fire": false,
+  "terrain": true
+}

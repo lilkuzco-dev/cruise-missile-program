@@ -1,0 +1,7 @@
+{
+  "item": "missile_program:hornet_warhead",
+  "tier": 1,
+  "blast": 3.0,
+  "fire": false,
+  "terrain": true
+}

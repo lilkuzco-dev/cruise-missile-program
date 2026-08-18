@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "cruise_missile_program",
+  "version": "${version}",
+  "name": "Cruise Missile Program",
+  "description": "Command and control for cruise missiles: a fire control console that commands launchers a thousand blocks away over a callsign network, targets fed from orbital reconnaissance, and a low terrain-hugging flight profile. Every metre of flight is integrated by lilkuzco_kinetics; this mod adds no physics of its own, only the command layer and the consequence at the far end.",
+  "authors": [
+    "lilkuzco"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.lilkuzco.cruisemissileprogram.CruiseMissileProgram"
+    ],
+    "client": [
+      "dev.lilkuzco.cruisemissileprogram.client.CruiseMissileProgramClient"
+    ],
+    "fabric-datagen": [
+      "dev.lilkuzco.cruisemissileprogram.datagen.CruiseMissileProgramDataGenerator"
+    ],
+    "fabric-client-gametest": [
+      "dev.lilkuzco.cruisemissileprogram.client.CruiseRenderTest"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*",
+    "kinetics": ">=0.1.4"
+  },
+  "suggests": {
+    "warfront": ">=0.3.0",
+    "cosmos": ">=0.2.2",
+    "missile_program": "*"
+  }
+}
