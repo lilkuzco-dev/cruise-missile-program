@@ -113,6 +113,11 @@ public class CruiseRenderTest implements FabricClientGameTest {
 				throw new AssertionError("cruise blast cleared only " + result.verticalDepth()
 						+ " vertical blocks; expected TNT-like depth");
 			}
+			// The assertion above measures the untouched blast. Remove the outermost west-face
+			// slice only afterwards, making the internal vertical cavity legible as a cutaway.
+			server.runCommand("fill 20 88 -6 20 112 6 minecraft:air");
+			server.runCommand("tp @p 10 104 0 -90 15");
+			context.waitTicks(20);
 			context.takeScreenshot("cruise_blast_depth");
 		}
 	}
