@@ -1,6 +1,7 @@
 package dev.lilkuzco.cruisemissileprogram.command;
 
 import dev.lilkuzco.cruisemissileprogram.CruiseMissileProgram;
+import dev.lilkuzco.cruisemissileprogram.CruiseSounds;
 import dev.lilkuzco.cruisemissileprogram.launcher.LaunchTubeBlockEntity;
 import dev.lilkuzco.cruisemissileprogram.missile.CruiseLaunch;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -10,7 +11,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -128,8 +128,10 @@ public final class StrikeTracker {
 		}
 		tube.setArmed(false);
 
-		level.playSound(null, pending.launcher(), SoundEvents.FIREWORK_ROCKET_LAUNCH,
-				SoundSource.BLOCKS, 3.0F, 0.6F);
+		// Loud, and deliberately so: a launch is a server-wide event, and the 6.0 volume carries
+		// it well past the tube's own chunk so neighbours know a strike left from nearby.
+		level.playSound(null, pending.launcher(), CruiseSounds.LAUNCH,
+				SoundSource.BLOCKS, 6.0F, 1.0F);
 		CruiseLaunch.launch(level, pending, round);
 	}
 }

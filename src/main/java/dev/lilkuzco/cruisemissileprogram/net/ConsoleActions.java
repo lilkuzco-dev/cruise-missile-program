@@ -1,5 +1,6 @@
 package dev.lilkuzco.cruisemissileprogram.net;
 
+import dev.lilkuzco.cruisemissileprogram.CruiseSounds;
 import dev.lilkuzco.cruisemissileprogram.bridge.CosmosTargetBridge;
 import dev.lilkuzco.cruisemissileprogram.bridge.WarfrontC2Bridge;
 import dev.lilkuzco.cruisemissileprogram.command.CommandNetwork;
@@ -13,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 
 import java.util.List;
 import java.util.Optional;
@@ -94,6 +96,8 @@ public final class ConsoleActions {
 			return;
 		}
 		console.setTarget(StrikeTarget.manual(parsed, level.getGameTime()));
+		level.playSound(null, console.getBlockPos(), CruiseSounds.TARGET_SET,
+				SoundSource.BLOCKS, 0.8F, 1.0F);
 	}
 
 	/**
@@ -112,6 +116,7 @@ public final class ConsoleActions {
 			player.sendSystemMessage(Component
 					.translatable("cruise_missile_program.message.no_cosmos")
 					.withStyle(ChatFormatting.RED));
+			refuse(player);
 			return;
 		}
 		List<CosmosTargetBridge.Fix> fixes = CosmosTargetBridge.reconFixes(level, player.getUUID());
@@ -123,11 +128,14 @@ public final class ConsoleActions {
 			player.sendSystemMessage(Component
 					.translatable("cruise_missile_program.message.no_satellite_data")
 					.withStyle(ChatFormatting.RED));
+			refuse(player);
 			return;
 		}
 		CosmosTargetBridge.Fix fix = chosen.get();
 		console.setTarget(new StrikeTarget(fix.best(), StrikeTarget.Source.SATELLITE,
 				fix.satelliteName(), level.getGameTime()));
+		level.playSound(null, console.getBlockPos(), CruiseSounds.TARGET_SET,
+				SoundSource.BLOCKS, 0.8F, 1.0F);
 		player.sendSystemMessage(Component.translatable(
 				"cruise_missile_program.message.satellite_fix", fix.satelliteName(),
 				fix.artificialBlocks()));
@@ -142,6 +150,7 @@ public final class ConsoleActions {
 			player.sendSystemMessage(Component
 					.translatable("cruise_missile_program.message.no_target")
 					.withStyle(ChatFormatting.RED));
+			refuse(player);
 			return;
 		}
 		List<LauncherRecord> roster = console.launchers(level);
@@ -157,12 +166,14 @@ public final class ConsoleActions {
 			player.sendSystemMessage(Component
 					.translatable("cruise_missile_program.message.no_loaded_launcher")
 					.withStyle(ChatFormatting.RED));
+			refuse(player);
 			return;
 		}
 		if (!chosen.dimension().equals(level.dimension().identifier())) {
 			player.sendSystemMessage(Component
 					.translatable("cruise_missile_program.message.wrong_dimension")
 					.withStyle(ChatFormatting.RED));
+			refuse(player);
 			return;
 		}
 
@@ -175,6 +186,10 @@ public final class ConsoleActions {
 				"cruise_missile_program.message.strike_ordered",
 				(int) Math.round(blocks), String.format("%.1f", countdown / 20.0)));
 
+		// The armed tone plays for everyone near the console, not just the officer who pressed
+		// the button — a strike leaving is not a private event for the people standing next to it.
+		level.playSound(null, console.getBlockPos(), CruiseSounds.ARMED,
+				SoundSource.BLOCKS, 1.0F, 1.0F);
 		WarfrontC2Bridge.announceStrike(level, player, target.get().pos(), console.callsign());
 	}
 
@@ -187,6 +202,21 @@ public final class ConsoleActions {
 		player.sendSystemMessage(Component
 				.translatable("cruise_missile_program.message.no_authority")
 				.withStyle(ChatFormatting.RED));
+		refuse(player);
+	}
+
+	/**
+	 * The refusal tone. Every branch that says no plays it, so "no" always sounds the same.
+	 *
+	 * <p>Played into the level rather than privately to the one player, which is the same choice
+	 * made for the armed tone and for the same reason: what happens at a fire control console is
+	 * not a private event for the people standing around it.
+	 */
+	private static void refuse(ServerPlayer player) {
+		if (player.level() instanceof ServerLevel level) {
+			level.playSound(null, player.blockPosition(), CruiseSounds.DENIED,
+					SoundSource.BLOCKS, 0.7F, 1.0F);
+		}
 	}
 
 	/** "x y z", tolerating commas and extra spaces. Returns null if it is not three numbers. */

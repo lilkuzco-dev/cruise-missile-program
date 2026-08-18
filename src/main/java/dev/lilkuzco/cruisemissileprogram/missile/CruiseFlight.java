@@ -1,6 +1,7 @@
 package dev.lilkuzco.cruisemissileprogram.missile;
 
 import dev.lilkuzco.cruisemissileprogram.CruiseMissileProgram;
+import dev.lilkuzco.cruisemissileprogram.CruiseSounds;
 import dev.lilkuzco.cruisemissileprogram.warhead.WarheadSpec;
 import dev.lilkuzco.kinetics.body.KineticBody;
 import dev.lilkuzco.kinetics.constants.Constants;
@@ -18,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
@@ -72,6 +74,7 @@ public final class CruiseFlight {
 		double lastWanted = Double.NaN;
 		double lastThrottle;
 		double previousRange = Double.MAX_VALUE;
+		double lastFlybyAt = -99.0;
 
 		InFlight(String bodyId, KineticBody body, ResourceKey<Level> dimension, Vec3 target,
 				WarheadSpec warhead, BlockPos launcher, UUID commander, String commanderName) {
@@ -122,6 +125,9 @@ public final class CruiseFlight {
 	 * columns a slow-turning missile re-scans are nearly free.
 	 */
 	private static final int TERRAIN_SAMPLES = 24;
+
+	/** How often the flyby is re-emitted. Slightly under the clip length so it reads as continuous. */
+	private static final double FLYBY_INTERVAL_SECONDS = 1.7;
 
 	/** Over how many blocks of run-in the missile lets down from cruise height to arrival height. */
 	private static final double LETDOWN_DISTANCE = 300.0;

@@ -1,4 +1,8 @@
 {
-  "parent": "minecraft:block/cube_all",
-  "textures": { "all": "cruise_missile_program:block/fire_control_console" }
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "cruise_missile_program:block/fire_control_console_front",
+    "side": "cruise_missile_program:block/fire_control_console_side",
+    "top": "cruise_missile_program:block/fire_control_console_top"
+  }
 }

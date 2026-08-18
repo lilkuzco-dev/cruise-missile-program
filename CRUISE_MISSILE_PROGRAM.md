@@ -301,18 +301,39 @@ wrong way and photographed empty stone — a reminder that a camera angle is par
 
 ---
 
-## 9. Placeholder assets needing real art
+## 9. Assets
 
-Everything in `tools/gen-textures.py` is computed, original, and deliberately plain. All of it
-would benefit from a real artist:
+Full provenance, hashes and the licence-verification method are in **ASSETS-ORIGIN.md**.
 
-| asset | size | state |
-|---|---|---|
-| `entity/cruise_missile.png` | 64×64 | computed; UV regions solved per box, verified in the battery |
-| `item/cruise_missile_body.png` | 16×16 | computed side silhouette |
-| `item/conventional_warhead.png` | 16×16 | computed |
-| `block/fire_control_console.png` | 16×16 | computed; one face used on all six |
-| `block/launch_tube.png` / `_top.png` | 16×16 | computed; no distinct bottom |
+**Audio — sourced.** Seven events, all from Kenney's CC0 packs (Sci-Fi Sounds, Interface Sounds),
+sliced to length by `tools/prepare-sounds.py`. That script pins each upstream archive by SHA-256
+and reads the licence out of the archive itself rather than trusting the download page, so a
+substituted archive fails loudly instead of quietly becoming this mod's audio. Attribution is not
+required by CC0 and is given anyway.
 
-Also placeholder: no sounds of any kind (launch uses vanilla firework), no custom particles
-(vanilla smoke), and the console screen is drawn in code rather than textured.
+| event | when |
+|---|---|
+| `launch` | the tube fires — volume 6.0, deliberately carries past its own chunk |
+| `flyby` | re-emitted from the missile every 1.7 s along the path |
+| `impact` | over the vanilla blast: the crack is vanilla's, the weight is this |
+| `console` / `target_set` / `armed` / `denied` | the console |
+
+All mono. Minecraft plays stereo flat and non-directional, and for a missile that is exactly
+wrong — hearing which way it is coming from is most of the value of it making a noise at all.
+The flyby is emitted **from the server at the body's position**, not looped on the entity, because
+the entity is not ticked over unloaded chunks and an anchored loop would fall silent for most of
+the flight.
+
+**Textures — computed, and that was a decision made after looking.** `tools/gen-textures.py`
+computes all nine as small programs over a pixel grid; re-running is byte-identical. CC0 art
+available for this niche is 2D platformer tilesets and 2K PBR panels — neither is 16×16 Minecraft
+block art — and OpenGameArt's licence fields are per-upload user claims, which is precisely the
+thing the aerospace provenance rule warns about. Every sibling mod computes its art for the same
+reasons; a sourced pack would also read as visually foreign beside them.
+
+The console is directional (`facing`), with three distinct faces: a green roster readout on the
+front, conduit down the sides, cooling vents on top. The launch tube has four capped tubes, a
+hazard rail, and a mounting plate underneath.
+
+Still genuinely placeholder: no custom particles (vanilla smoke), and the console screen is drawn
+in code rather than textured.

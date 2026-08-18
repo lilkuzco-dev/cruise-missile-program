@@ -1,0 +1,54 @@
+{
+  "block.launch_tube.launch": {
+    "sounds": [
+      {
+        "name": "cruise_missile_program:launch"
+      }
+    ],
+    "subtitle": "subtitles.cruise_missile_program.launch"
+  },
+  "entity.cruise_missile.flyby": {
+    "sounds": [
+      {
+        "name": "cruise_missile_program:flyby"
+      }
+    ],
+    "subtitle": "subtitles.cruise_missile_program.flyby"
+  },
+  "entity.cruise_missile.impact": {
+    "sounds": [
+      {
+        "name": "cruise_missile_program:impact"
+      }
+    ],
+    "subtitle": "subtitles.cruise_missile_program.impact"
+  },
+  "block.fire_control_console.open": {
+    "sounds": [
+      {
+        "name": "cruise_missile_program:console"
+      }
+    ]
+  },
+  "block.fire_control_console.target_set": {
+    "sounds": [
+      {
+        "name": "cruise_missile_program:target_set"
+      }
+    ]
+  },
+  "block.fire_control_console.armed": {
+    "sounds": [
+      {
+        "name": "cruise_missile_program:armed"
+      }
+    ]
+  },
+  "block.fire_control_console.denied": {
+    "sounds": [
+      {
+        "name": "cruise_missile_program:denied"
+      }
+    ]
+  }
+}

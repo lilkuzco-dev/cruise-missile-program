@@ -210,41 +210,91 @@ def plated(base, lit, dark, seam_every=8):
     return px
 
 
-def fire_control_console():
+def console_front():
+    """The console's working face: a green phosphor readout with a roster on it.
+
+    A control block wants one face you read and five you do not, which is why this is three
+    textures and a facing property rather than one texture on a cube. The first version put an
+    identical screen on all six sides and the block read as a decorative box rather than
+    something with a front.
+    """
     px = plated(CONSOLE, CONSOLE_LIT, shade(CONSOLE, 0.7), 8)
-    # The display: a green panel with three roster rows and a cursor.
-    rect(px, 3, 3, 10, 8, shade(CONSOLE, 0.45))
-    rect(px, 4, 4, 8, 6, shade(SCREEN, 0.35))
-    for row in range(3):
-        rect(px, 5, 5 + row * 2, 5, 1, SCREEN)
-    rect(px, 10, 9, 1, 1, shade(SCREEN, 1.4))
-    # Status lamp.
-    rect(px, 12, 12, 2, 2, shade(SCREEN, 1.5))
-    return png(os.path.join(OUT, "block", "fire_control_console.png"), px)
+    # Recessed bezel, then the display.
+    rect(px, 2, 2, 12, 9, shade(CONSOLE, 0.42))
+    rect(px, 2, 2, 12, 1, shade(CONSOLE, 0.30))
+    rect(px, 3, 3, 10, 7, shade(SCREEN, 0.22))
+    # Four roster rows of varying length - it should read as a list, not a pattern.
+    for row, width in enumerate((7, 5, 6, 3)):
+        rect(px, 4, 4 + row * 2, width, 1, shade(SCREEN, 0.75 + 0.08 * row))
+    # The selection cursor sits on one row.
+    rect(px, 12, 6, 1, 1, shade(SCREEN, 1.6))
+    # Status lamps along the bottom rail: armed, link, power.
+    rect(px, 0, 12, 16, 4, shade(CONSOLE, 0.62))
+    rect(px, 2, 13, 2, 2, shade(WARN, 1.0))
+    rect(px, 7, 13, 2, 2, shade(SCREEN, 1.4))
+    rect(px, 12, 13, 2, 2, shade(SCREEN, 0.55))
+    return png(os.path.join(OUT, "block", "fire_control_console_front.png"), px)
+
+
+def console_side():
+    """Plain armoured flank. Cable conduit down one edge so the sides are not featureless."""
+    px = plated(CONSOLE, CONSOLE_LIT, shade(CONSOLE, 0.7), 8)
+    rect(px, 11, 0, 3, 16, shade(CONSOLE, 0.58))
+    for y in range(1, 16, 3):
+        rect(px, 11, y, 3, 1, shade(CONSOLE, 0.78))
+    rect(px, 0, 12, 16, 4, shade(CONSOLE, 0.62))
+    return png(os.path.join(OUT, "block", "fire_control_console_side.png"), px)
+
+
+def console_top():
+    """Cooling vents. What the top of a machine that runs hot looks like from above."""
+    px = plated(CONSOLE, CONSOLE_LIT, shade(CONSOLE, 0.7), 8)
+    for i in range(4):
+        rect(px, 3, 2 + i * 3, 10, 2, shade(CONSOLE, 0.40))
+        rect(px, 3, 2 + i * 3, 10, 1, shade(CONSOLE, 0.30))
+    return png(os.path.join(OUT, "block", "fire_control_console_top.png"), px)
 
 
 def launch_tube_side():
+    """Four capped tubes in a frame, with a hazard rail along the bottom."""
     px = plated(STEEL, STEEL_LIT, STEEL_DARK, 8)
-    # Four tube mouths in a row, the block's signature.
     for i in range(4):
-        rect(px, 1 + i * 4, 5, 3, 6, shade(STEEL_DARK, 0.55))
-        rect(px, 1 + i * 4, 5, 3, 1, STEEL_LIT)
-    rect(px, 0, 12, 16, 1, BAND)
+        x = 1 + i * 4
+        # Tube body, then a lit upper lip and a shadowed lower one so it reads as a cylinder.
+        rect(px, x, 3, 3, 9, shade(STEEL_DARK, 0.55))
+        rect(px, x, 3, 3, 1, STEEL_LIT)
+        rect(px, x, 11, 3, 1, shade(STEEL_DARK, 0.35))
+        rect(px, x + 1, 4, 1, 7, shade(STEEL_DARK, 0.75))
+    # Hazard rail: alternating stripes, the universal "this end is dangerous" language.
+    for x in range(16):
+        rect(px, x, 13, 1, 3, WARN if (x // 2) % 2 == 0 else shade(STEEL_DARK, 0.8))
     return png(os.path.join(OUT, "block", "launch_tube.png"), px)
 
 
 def launch_tube_top():
+    """Looking down four open tubes. The face a player sees a missile leave."""
     px = plated(STEEL, STEEL_LIT, STEEL_DARK, 8)
-    # Looking down four open tubes.
     for i in range(2):
         for j in range(2):
-            rect(px, 2 + i * 7, 2 + j * 7, 5, 5, shade(STEEL_DARK, 0.5))
-            rect(px, 3 + i * 7, 3 + j * 7, 3, 3, shade(STEEL_DARK, 0.3))
+            x, y = 2 + i * 7, 2 + j * 7
+            rect(px, x, y, 5, 5, shade(STEEL_DARK, 0.62))
+            rect(px, x, y, 5, 1, STEEL_LIT)
+            rect(px, x + 1, y + 1, 3, 3, shade(STEEL_DARK, 0.28))
+            # A round in the tube, seen end-on.
+            rect(px, x + 2, y + 2, 1, 1, shade(BAND, 1.2))
     return png(os.path.join(OUT, "block", "launch_tube_top.png"), px)
+
+
+def launch_tube_bottom():
+    """The mounting plate. Dull on purpose; nobody looks at it, but a shared side texture there
+    made the block look like it floated."""
+    px = plated(shade(STEEL, 0.8), STEEL, STEEL_DARK, 4)
+    return png(os.path.join(OUT, "block", "launch_tube_bottom.png"), px)
 
 
 if __name__ == "__main__":
     for path, w, h in [cruise_missile_sheet(), cruise_missile_body_item(),
-                       conventional_warhead_item(), fire_control_console(),
-                       launch_tube_side(), launch_tube_top()]:
+                       conventional_warhead_item(),
+                       console_front(), console_side(), console_top(),
+                       launch_tube_side(), launch_tube_top(), launch_tube_bottom()]:
         print(f"{w}x{h}  {os.path.relpath(path, os.path.dirname(__file__))}")

@@ -1,6 +1,8 @@
 package dev.lilkuzco.cruisemissileprogram.missile;
 
+import dev.lilkuzco.cruisemissileprogram.CruiseSounds;
 import dev.lilkuzco.cruisemissileprogram.warhead.WarheadSpec;
+import net.minecraft.sounds.SoundSource;
 import dev.lilkuzco.kinetics.math.Vec3;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -25,5 +27,10 @@ public final class Detonation {
 
 		level.explode(null, position.x(), position.y(), position.z(),
 				warhead.blast(), warhead.fire(), interaction);
+
+		// Played on top of the explosion rather than instead of it. The vanilla blast carries the
+		// crack; this carries the weight, and a warhead should not sound like a creeper.
+		level.playSound(null, position.x(), position.y(), position.z(),
+				CruiseSounds.IMPACT, SoundSource.BLOCKS, 6.0F, 1.0F);
 	}
 }

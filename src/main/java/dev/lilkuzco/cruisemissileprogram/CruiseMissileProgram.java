@@ -44,6 +44,7 @@ public class CruiseMissileProgram implements ModInitializer {
 		CruiseBlockEntities.register();
 		CruiseMenus.register();
 		CruiseEntities.register();
+		CruiseSounds.register();
 		WarheadRegistry.register();
 
 		CruiseNet.registerCommon();
